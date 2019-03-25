@@ -5,23 +5,23 @@ import matplotlib.pyplot as plot
 
 CSV_FILE_NAME = "Forces lab - Rolling Car - CSV DATA.csv"
 
-GRAVITATIONAL_ACCELERATION = 9.81
-
 
 def main():
     """The main function that is run first"""
     trials = parse_data_from_csv()
 
-    graph_scatter_plots(trials)
+    for trial in trials:
+        trial.graph_scatter_plot()
 
-    find_quadratics(trials)
-
-    graph_quadratics(trials)
-
-    find_accelerations(trials)
+    show_graph(trials, file_name="position_time_graph_scatter.png")
 
     for trial in trials:
+        trial.find_quadratic()
+        trial.graph_quadratic()
+        trial.find_acceleration()
         print(trial.acceleration)
+
+    show_graph(trials, file_name="position_time_graph_quadratics.png")
 
 
 class Trial:
@@ -41,8 +41,37 @@ class Trial:
     def get_max_displacement(self):
         return self.displacements[-1]
 
-    def get_expected_acceleration(self):
-        return self.hanging_weight / (self.hanging_weight + self.cart_weight) * GRAVITATIONAL_ACCELERATION
+    def graph_scatter_plot(self):
+        """Creates a graph of just the individual position-time points"""
+
+        # For each trial plot the points
+
+        plot.scatter(
+            self.times,
+            self.displacements,
+            marker=".",
+            label=f"({self.hanging_weight}, {self.cart_weight})"
+        )
+
+    def find_quadratic(self):
+        """Generates the quadratic equations for each trial"""
+        self.equation = polyfit(self.times, self.displacements, deg=2)
+
+    def graph_quadratic(self):
+        """Graphs the quadratic equations with with opaque data points"""
+
+        plot.scatter(self.times, self.displacements, marker=".", alpha=0.3)
+
+        equation_times = arange(0, 5, 0.01)
+        equation = self.equation
+        equation_displacements = equation[0] * equation_times ** 2 + equation[1] * equation_times + equation[2]
+
+        plot.plot(equation_times, equation_displacements, label=f"({self.hanging_weight}, {self.cart_weight})")
+
+    def find_acceleration(self):
+        """Calculates the accelerations"""
+
+        self.acceleration = 2 * self.equation[0]
 
 
 def parse_data_from_csv():
@@ -82,7 +111,7 @@ def parse_data_from_csv():
     return trials
 
 
-def prepare_graph(trials):
+def show_graph(trials, file_name=None):
     max_displacement = 0
     max_time = 0
 
@@ -97,52 +126,10 @@ def prepare_graph(trials):
     plot.title("Position - Time Graph")
     plot.legend(title="(Hanging Mass, Cart Mass)\n(in edhruvs)")
 
+    if file_name is not None:
+        plot.savefig(file_name, dpi=600)
 
-def graph_scatter_plots(trials):
-    """Creates a graph of just the individual position-time points"""
-
-    # For each trial plot the points
-    for trial in trials:
-        plot.scatter(
-            trial.times,
-            trial.displacements,
-            marker=".",
-            label=f"({trial.hanging_weight}, {trial.cart_weight})"
-        )
-
-    prepare_graph(trials)
-    plot.savefig("position_time_graph_scatter.png", dpi=600)
     plot.show()
-
-
-def find_quadratics(trials):
-    """Generates the quadratic equations for each trial"""
-    for trial in trials:
-        trial.equation = polyfit(trial.times, trial.displacements, deg=2)
-
-
-def graph_quadratics(trials):
-    """Graphs the quadratic equations with with opaque data points"""
-
-    for trial in trials:
-        plot.scatter(trial.times, trial.displacements, marker=".", alpha=0.3)
-
-        equation_times = arange(0, 5, 0.01)
-        equation = trial.equation
-        equation_displacements = equation[0] * equation_times ** 2 + equation[1] * equation_times + equation[2]
-
-        plot.plot(equation_times, equation_displacements, label=f"({trial.hanging_weight}, {trial.cart_weight})")
-
-    prepare_graph(trials)
-    plot.savefig("position_time_graph_quadratics.png", dpi=600)
-    plot.show()
-
-
-def find_accelerations(trials):
-    """Calculates the accelerations"""
-
-    for trial in trials:
-        trial.acceleration = 2 * trial.equation[0]
 
 
 if __name__ == '__main__':
