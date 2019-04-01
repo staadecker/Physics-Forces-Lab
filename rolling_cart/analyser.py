@@ -2,18 +2,20 @@ import csv
 
 from numpy import polyfit, arange
 import matplotlib.pyplot as plot
+import os.path
+import sys
 
-CSV_FILE_NAME = "Forces lab - Rolling Car - CSV DATA.csv"
+CSV_FILE_NAME = os.path.join(sys.path[0], "data.csv")
 
 
 def main():
-    """The main function that is run first"""
+    """The main function that is called when the program is run"""
     trials = parse_data_from_csv()
 
     for trial in trials:
         trial.graph_scatter_plot()
 
-    show_graph(trials, file_name="position_time_graph_scatter.png")
+    show_graph(trials, file_name="scatter_plot.png")
 
     for trial in trials:
         trial.find_quadratic()
@@ -21,7 +23,7 @@ def main():
         trial.find_acceleration()
         print(trial.acceleration)
 
-    show_graph(trials, file_name="position_time_graph_quadratics.png")
+    show_graph(trials, file_name="scatter_plot_with_line_of_best_fit.png")
 
 
 class Trial:
