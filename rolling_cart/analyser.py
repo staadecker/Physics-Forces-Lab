@@ -3,9 +3,10 @@ import csv
 from numpy import polyfit, arange
 import matplotlib.pyplot as plot
 import os.path
-import sys
 
-CSV_FILE_NAME = os.path.join(sys.path[0], "data.csv")
+CSV_FILE_NAME = "data.csv"
+
+current_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 def main():
@@ -15,15 +16,19 @@ def main():
     for trial in trials:
         trial.graph_scatter_plot()
 
-    show_graph(trials, file_name="scatter_plot.png")
+    show_graph(trials, file_name=f"{current_directory}\\scatter_plot.png")
 
     for trial in trials:
         trial.find_quadratic()
         trial.graph_quadratic()
         trial.find_acceleration()
-        print(trial.acceleration)
+        print(
+            f"Hanging weight: {trial.hanging_weight}. "
+            f"Cart weight: {trial.cart_weight}. "
+            f"Acceleration: {trial.acceleration}"
+        )
 
-    show_graph(trials, file_name="scatter_plot_with_line_of_best_fit.png")
+    show_graph(trials, file_name=f"{current_directory}\\scatter_plot_with_line_of_best_fit.png")
 
 
 class Trial:
@@ -82,7 +87,7 @@ def parse_data_from_csv():
     trials = []
     displacements = []
 
-    with open(CSV_FILE_NAME) as csv_file:
+    with open(current_directory + "\\" + CSV_FILE_NAME) as csv_file:
         file_reader = csv.reader(csv_file, delimiter=",")  # Create an object to read the csv_file
 
         # Loop through each row and measurement

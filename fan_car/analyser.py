@@ -1,12 +1,12 @@
 import csv
 import matplotlib.pyplot as plot
 import os.path
-import sys
 
 from numpy import polyfit, arange
 
+CSV_FILE_NAME = "data.csv"
 
-CSV_FILE_NAME = os.path.join(sys.path[0], "data.csv")
+current_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     for trial in trials:
         trial.graph_scatter_plot()
 
-    show_graph(trials, file_name="scatter_plot.png")
+    show_graph(trials, file_path=f"{current_directory}\\scatter_plot.png")
 
     for trial in trials:
         trial.find_quadratic()
@@ -25,7 +25,7 @@ def main():
         trial.find_acceleration()
         print(f"For mass of {trial.car_weight} pno, acceleration is: {trial.acceleration}")
 
-    show_graph(trials, file_name="scatter_plot_with_line_of_best_fit.png")
+    show_graph(trials, file_path=f"{current_directory}\\scatter_plot_with_line_of_best_fit.png")
 
 
 class Trial:
@@ -82,7 +82,7 @@ def parse_data_from_csv():
     trials = []
     times = []
 
-    with open(CSV_FILE_NAME) as csv_file:
+    with open(current_directory + "\\" + CSV_FILE_NAME) as csv_file:
         file_reader = csv.reader(csv_file, delimiter=",")  # Create an object to read the csv_file
 
         # Loop through each row and measurement
@@ -109,7 +109,7 @@ def parse_data_from_csv():
     return trials
 
 
-def show_graph(trials, file_name=None):
+def show_graph(trials, file_path=None):
     max_displacement = 0
     max_time = 0
 
@@ -124,8 +124,8 @@ def show_graph(trials, file_name=None):
     plot.title("Position - Time Graph")
     plot.legend(title="Car's mass")
 
-    if file_name is not None:
-        plot.savefig(file_name, dpi=600)
+    if file_path is not None:
+        plot.savefig(file_path, dpi=600)
 
     plot.show()
 
